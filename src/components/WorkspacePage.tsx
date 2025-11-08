@@ -13,9 +13,13 @@ import {
   Pause,
   Square,
   RotateCw,
-  Video
+  Video,
+  Loader2
 } from 'lucide-react';
 import './WorkspacePage.css';
+import StreamOnlyWindow from './stream/StreamOnlyWindow';
+import StreamConfig from '../../stream.config.json';
+import type { StreamStatus } from '../types/stream.types';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -43,19 +47,80 @@ function WorkspacePage({ onBackToHome }: WorkspacePageProps) {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   
-  const [traceLogs] = useState<TraceLog[]>([
+  const [traceLogs, setTraceLogs] = useState<TraceLog[]>([
     { timestamp: new Date(), level: 'info', message: 'System initialized' },
     { timestamp: new Date(), level: 'info', message: 'Waiting for video stream...' }
   ]);
 
+  // Video stream states
+  const [streamStatus, setStreamStatus] = useState<StreamStatus>('idle');
+  const [showStream, setShowStream] = useState(false);
+  const [streamError, setStreamError] = useState<string>('');
+  const [streamFps] = useState<number>(60);
+  const [streamResolution] = useState<string>('1920x1080');
+
+  // Helper function to add trace logs
+  const addTraceLog = (level: 'info' | 'warning' | 'error', message: string, data?: any) => {
+    setTraceLogs(prev => [...prev, {
+      timestamp: new Date(),
+      level,
+      message,
+      data
+    }]);
+  };
+
+  // Handle stream started successfully
+  const handleStreamStarted = () => {
+    setStreamStatus('connected');
+    addTraceLog('info', `Video stream connected successfully (${streamResolution} @ ${streamFps} FPS)`);
+  };
+
+  // Handle stream connection failed
+  const handleStreamFailed = (error?: any) => {
+    setStreamStatus('error');
+    const errorMsg = error?.message || error?.info || 'Unknown error';
+    setStreamError(errorMsg);
+    addTraceLog('error', `Stream connection failed: ${errorMsg}`, error);
+  };
+
+  // Handle stream retry
+  const handleStreamRetry = () => {
+    setStreamStatus('connecting');
+    setStreamError('');
+    setShowStream(false);
+    addTraceLog('info', 'Retrying stream connection...');
+    
+    // Trigger re-render with a small delay
+    setTimeout(() => {
+      setShowStream(true);
+    }, 100);
+  };
+
+  // Handle stop stream
+  const handleStopStream = () => {
+    setShowStream(false);
+    setStreamStatus('idle');
+    addTraceLog('info', 'Stream stopped by user');
+  };
+
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
+      const userMsg = inputMessage;
       setMessages([...messages, { 
         role: 'user', 
-        content: inputMessage, 
+        content: userMsg, 
         timestamp: new Date() 
       }]);
       setInputMessage('');
+      
+      addTraceLog('info', `User message sent: "${userMsg}"`);
+      
+      // Trigger video stream on first message (if not already started)
+      if (streamStatus === 'idle') {
+        setStreamStatus('connecting');
+        setShowStream(true);
+        addTraceLog('info', 'Initiating video stream connection...');
+      }
       
       // 模拟AI回复
       setTimeout(() => {
@@ -64,6 +129,7 @@ function WorkspacePage({ onBackToHome }: WorkspacePageProps) {
           content: 'I received your message. Processing...', 
           timestamp: new Date() 
         }]);
+        addTraceLog('info', 'AI response received');
       }, 1000);
     }
   };
@@ -165,43 +231,122 @@ function WorkspacePage({ onBackToHome }: WorkspacePageProps) {
         <div className="panel-header">
           <h3>Video Stream</h3>
           <div className="video-controls">
-            <button className="control-btn" title="Play">
+            <button 
+              className="control-btn" 
+              title="Play" 
+              disabled={streamStatus === 'connected'}
+              style={{ opacity: streamStatus === 'connected' ? 0.5 : 1 }}
+            >
               <Play size={16} />
             </button>
-            <button className="control-btn" title="Pause">
+            <button 
+              className="control-btn" 
+              title="Pause" 
+              disabled
+              style={{ opacity: 0.5 }}
+            >
               <Pause size={16} />
             </button>
-            <button className="control-btn" title="Stop">
+            <button 
+              className="control-btn" 
+              title="Stop" 
+              onClick={handleStopStream}
+              disabled={streamStatus === 'idle'}
+              style={{ opacity: streamStatus === 'idle' ? 0.5 : 1 }}
+            >
               <Square size={16} />
             </button>
-            <button className="control-btn" title="Refresh">
+            <button 
+              className="control-btn" 
+              title="Refresh" 
+              onClick={handleStreamRetry}
+              disabled={streamStatus === 'idle' || streamStatus === 'connecting'}
+              style={{ opacity: (streamStatus === 'idle' || streamStatus === 'connecting') ? 0.5 : 1 }}
+            >
               <RotateCw size={16} />
             </button>
           </div>
         </div>
         
         <div className="video-container">
-          <div className="video-placeholder">
-            <div className="placeholder-icon">
-              <Video size={64} strokeWidth={1.5} />
+          {/* Show placeholder when stream is not active or connecting */}
+          {(!showStream || streamStatus === 'connecting') && (
+            <div className="video-placeholder">
+              <div className="placeholder-icon">
+                {streamStatus === 'connecting' ? (
+                  <Loader2 size={64} strokeWidth={1.5} className="animate-spin" />
+                ) : (
+                  <Video size={64} strokeWidth={1.5} />
+                )}
+              </div>
+              <p>
+                {streamStatus === 'idle' && 'Video stream will appear here'}
+                {streamStatus === 'connecting' && 'Connecting to stream...'}
+                {streamStatus === 'error' && 'Connection failed'}
+              </p>
+              <p className="placeholder-subtext">
+                {streamStatus === 'idle' && 'Send a message to start streaming'}
+                {streamStatus === 'connecting' && 'Please wait...'}
+                {streamStatus === 'error' && streamError}
+              </p>
+              {streamStatus === 'error' && (
+                <button 
+                  onClick={handleStreamRetry}
+                  style={{
+                    marginTop: '1rem',
+                    padding: '0.5rem 1rem',
+                    background: '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Retry Connection
+                </button>
+              )}
             </div>
-            <p>Video stream will appear here</p>
-            <p className="placeholder-subtext">Waiting for connection...</p>
-          </div>
+          )}
+
+          {/* Show video stream when connected */}
+          {showStream && streamStatus !== 'connecting' && (
+            <StreamOnlyWindow
+              signalingserver={StreamConfig.local.server}
+              signalingport={StreamConfig.local.signalingPort}
+              mediaserver={StreamConfig.local.server}
+              mediaport={StreamConfig.local.mediaPort}
+              onStreamStarted={handleStreamStarted}
+              onStreamFailed={handleStreamFailed}
+            />
+          )}
         </div>
         
         <div className="video-info">
           <div className="info-item">
             <span className="info-label">Status:</span>
-            <span className="info-value status-waiting">Waiting</span>
+            <span className={`info-value ${
+              streamStatus === 'idle' ? 'status-waiting' :
+              streamStatus === 'connecting' ? 'status-connecting' :
+              streamStatus === 'connected' ? 'status-connected' :
+              'status-error'
+            }`}>
+              {streamStatus === 'idle' && 'Waiting'}
+              {streamStatus === 'connecting' && 'Connecting...'}
+              {streamStatus === 'connected' && 'Connected'}
+              {streamStatus === 'error' && 'Error'}
+            </span>
           </div>
           <div className="info-item">
             <span className="info-label">FPS:</span>
-            <span className="info-value">--</span>
+            <span className="info-value">
+              {streamStatus === 'connected' ? streamFps : '--'}
+            </span>
           </div>
           <div className="info-item">
             <span className="info-label">Resolution:</span>
-            <span className="info-value">--</span>
+            <span className="info-value">
+              {streamStatus === 'connected' ? streamResolution : '--'}
+            </span>
           </div>
         </div>
       </main>

@@ -388,6 +388,28 @@
   margin: 1rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stream wrapper for positioning */
+.stream-only-container {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.stream-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .video-placeholder {
@@ -439,6 +461,19 @@
 
 .status-waiting {
   color: #FFB366;
+}
+
+.status-connecting {
+  color: #FFD700;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-connected {
+  color: #4ADE80;
+}
+
+.status-error {
+  color: #FF6666;
 }
 
 /* ==================== Trace面板 ==================== */
@@ -596,3 +631,25 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
+/* ==================== Animations ==================== */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

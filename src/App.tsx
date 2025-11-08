@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Brain, Shield, Zap, Microscope, BarChart2, GitBranch } from 'lucide-react'
 import './App.css'
 import WorkspacePage from './components/WorkspacePage'
 
@@ -102,7 +103,9 @@ function App() {
 
           <div className="feature-grid">
             <div className="feature-card">
-              <div className="feature-icon">🤖</div>
+              <div className="feature-icon">
+                <Brain size={32} strokeWidth={1.5} />
+              </div>
               <h3 className="feature-card-title">智能行为分析</h3>
               <p className="feature-card-description">
                 实时监控和分析机器人的决策过程，评估行为的合理性与安全性，确保符合预期目标
@@ -110,7 +113,9 @@ function App() {
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">🛡️</div>
+              <div className="feature-icon">
+                <Shield size={32} strokeWidth={1.5} />
+              </div>
               <h3 className="feature-card-title">安全性测试</h3>
               <p className="feature-card-description">
                 多维度安全评估，包括物理安全、数据安全、对抗攻击防御等全方位测试场景
@@ -118,7 +123,9 @@ function App() {
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">⚡</div>
+              <div className="feature-icon">
+                <Zap size={32} strokeWidth={1.5} />
+              </div>
               <h3 className="feature-card-title">性能基准测试</h3>
               <p className="feature-card-description">
                 标准化的性能评测体系，覆盖感知、规划、执行等关键环节，提供量化指标
@@ -126,7 +133,9 @@ function App() {
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">🔬</div>
+              <div className="feature-icon">
+                <Microscope size={32} strokeWidth={1.5} />
+              </div>
               <h3 className="feature-card-title">场景模拟</h3>
               <p className="feature-card-description">
                 高保真的虚拟环境模拟，支持多种复杂场景配置，降低真实测试成本
@@ -134,7 +143,9 @@ function App() {
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">📊</div>
+              <div className="feature-icon">
+                <BarChart2 size={32} strokeWidth={1.5} />
+              </div>
               <h3 className="feature-card-title">数据可视化</h3>
               <p className="feature-card-description">
                 直观的数据展示和分析工具，帮助快速定位问题，优化系统性能
@@ -142,7 +153,9 @@ function App() {
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">🔄</div>
+              <div className="feature-icon">
+                <GitBranch size={32} strokeWidth={1.5} />
+              </div>
               <h3 className="feature-card-title">持续集成</h3>
               <p className="feature-card-description">
                 自动化测试流程，支持CI/CD集成，实现开发测试一体化

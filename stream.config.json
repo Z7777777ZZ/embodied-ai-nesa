@@ -1,0 +1,11 @@
+{
+    "$comment": "Stream configuration for Omniverse Kit application streaming",
+    "source": "local",
+    "local": {
+        "$comment": "Local streaming configuration",
+        "server": "127.0.0.1",
+        "signalingPort": 49100,
+        "mediaPort": null
+    }
+}
+

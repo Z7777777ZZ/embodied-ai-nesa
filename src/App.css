@@ -116,6 +116,35 @@
   }
 }
 
+/* 登录页面包装器 */
+.login-wrapper {
+  min-height: 100vh;
+  position: relative;
+  background: transparent;
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: loginFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.login-wrapper.transitioning-out {
+  opacity: 0;
+  transform: scale(0.9) translateZ(-100px);
+}
+
+.login-wrapper.transitioning-out .gradient-bg {
+  animation: glowMoveDepth 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes loginFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Back to home 按钮已移除，使用侧边栏 logo 代替 */
 
 /* 渐变背景 - 复刻 background.png */

@@ -1,23 +1,68 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Brain, Shield, Zap, Microscope, BarChart2, GitBranch } from 'lucide-react'
 import './App.css'
 import WorkspacePage from './components/WorkspacePage'
+import LoginPage from './components/LoginPage'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'workspace'>('home')
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'workspace'>('home')
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showTransitionOverlay, setShowTransitionOverlay] = useState(false)
 
-  const handleGetStarted = () => {
+  const handleGoToWorkspace = () => {
     setIsTransitioning(true)
     setShowTransitionOverlay(true)
     
-    // 等待过渡动画完成后切换页面
     setTimeout(() => {
       setCurrentPage('workspace')
     }, 1000)
     
-    // 过渡完成后隐藏遮罩，但保持 isTransitioning 为 true
+    setTimeout(() => {
+      setShowTransitionOverlay(false)
+    }, 1400)
+  }
+
+  // 检查是否已登录
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+    if (isLoggedIn && currentPage === 'home') {
+      // 如果已登录,直接跳转到工作台
+      handleGoToWorkspace()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleGetStarted = () => {
+    // 检查是否已登录
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+    
+    if (isLoggedIn) {
+      // 如果已登录,直接跳转到工作台
+      handleGoToWorkspace()
+    } else {
+      // 如果未登录,跳转到登录页面
+      setIsTransitioning(true)
+      setShowTransitionOverlay(true)
+      
+      setTimeout(() => {
+        setCurrentPage('login')
+      }, 1000)
+      
+      setTimeout(() => {
+        setShowTransitionOverlay(false)
+      }, 1400)
+    }
+  }
+
+  const handleLoginSuccess = () => {
+    // 登录成功后跳转到工作台
+    setIsTransitioning(true)
+    setShowTransitionOverlay(true)
+    
+    setTimeout(() => {
+      setCurrentPage('workspace')
+    }, 1000)
+    
     setTimeout(() => {
       setShowTransitionOverlay(false)
     }, 1400)
@@ -49,6 +94,13 @@ function App() {
         <div className="workspace-wrapper">
           <WorkspacePage onBackToHome={handleBackToHome} />
         </div>
+      ) : currentPage === 'login' ? (
+        <div className={`login-wrapper ${isTransitioning ? 'transitioning-out' : ''}`}>
+          <LoginPage 
+            onLoginSuccess={handleLoginSuccess}
+            onBackToHome={handleBackToHome}
+          />
+        </div>
       ) : (
         <div className={`app ${isTransitioning ? 'transitioning-out' : ''}`}>
           {/* 渐变背景 */}
@@ -71,10 +123,10 @@ function App() {
             <div className="hero">
               <h1 className="hero-title">NESA Lab</h1>
               <p className="hero-subtitle">
-                Embodied AI Platform
+                Embodied AI Security Evaluation Platform
               </p>
               <p className="hero-description">
-                Building the future of intelligent robotics and embodied artificial intelligence
+                Building the future of embodied artificial intelligence security evaluation platform
               </p>
 
               {/* CTA按钮 */}

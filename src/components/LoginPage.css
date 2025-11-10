@@ -1,0 +1,389 @@
+.login-page {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background: transparent;
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-page.transitioning-out {
+  opacity: 0;
+  transform: scale(0.9) translateZ(-100px);
+}
+
+.login-page.transitioning-out .gradient-bg {
+  animation: glowMoveDepth 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 渐变背景 - 与首页一致 */
+.login-page .gradient-bg {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  background: 
+    /* 中央强烈的橙色光晕 - 类似图片中央 */
+    radial-gradient(ellipse 1600px 800px at 50% 35%, 
+      rgba(255, 140, 60, 0.7) 0%, 
+      rgba(255, 120, 40, 0.5) 15%, 
+      rgba(255, 160, 80, 0.35) 30%, 
+      rgba(255, 180, 100, 0.2) 45%, 
+      transparent 65%),
+    /* 右侧蓝色光晕 - 大范围 */
+    radial-gradient(ellipse 1200px 1600px at 85% 50%, 
+      rgba(40, 100, 180, 0.6) 0%, 
+      rgba(30, 80, 150, 0.45) 20%, 
+      rgba(20, 60, 120, 0.3) 40%, 
+      transparent 65%),
+    /* 左下角深色蓝调 */
+    radial-gradient(ellipse 1000px 1000px at 10% 80%, 
+      rgba(15, 40, 80, 0.5) 0%, 
+      rgba(10, 30, 60, 0.35) 30%, 
+      transparent 60%),
+    /* 顶部深色渐变 - 保持导航栏可见 */
+    linear-gradient(180deg, 
+      rgba(5, 10, 20, 0.95) 0%, 
+      rgba(10, 15, 25, 0.7) 8%, 
+      rgba(15, 20, 30, 0.4) 15%, 
+      transparent 22%),
+    /* 底部深色渐变 */
+    linear-gradient(180deg, 
+      transparent 0%, 
+      transparent 55%, 
+      rgba(5, 10, 20, 0.5) 70%, 
+      rgba(5, 8, 15, 0.8) 85%, 
+      rgba(0, 0, 0, 0.95) 95%, 
+      #000000 100%),
+    /* 整体基调 - 深蓝黑 */
+    radial-gradient(ellipse 150% 120% at 50% 50%, 
+      rgba(10, 20, 35, 1) 0%, 
+      rgba(5, 10, 20, 1) 100%) !important;
+  animation: subtle-shift 25s ease-in-out infinite;
+}
+
+@keyframes subtle-shift {
+  0%, 100% { 
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% { 
+    opacity: 0.98;
+    filter: brightness(1.02);
+  }
+}
+
+/* 导航栏 - 与首页一致 */
+.login-page .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  padding: 1.5rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.login-page .navbar-logo {
+  font-size: 1.2rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: 'Geist Mono', monospace;
+}
+
+.login-page .navbar-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.login-page .navbar-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.login-page .navbar-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #FF6600, #FF8000);
+  transition: width 0.3s ease;
+}
+
+.login-page .navbar-link:hover {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.login-page .navbar-link:hover::after {
+  width: 100%;
+}
+
+/* 登录内容区域 */
+.login-content {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(135deg, rgba(18, 18, 28, 0.6), rgba(12, 12, 22, 0.7));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(255, 102, 0, 0.1);
+  animation: loginFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes loginFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.login-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(255, 102, 0, 0.2), rgba(255, 128, 0, 0.15));
+  border: 1px solid rgba(255, 102, 0, 0.3);
+  color: rgba(255, 140, 60, 0.9);
+  margin-bottom: 1.5rem;
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 102, 0, 0.5);
+  }
+}
+
+.login-title {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 0.75rem;
+}
+
+.login-subtitle {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Geist Mono', monospace;
+}
+
+/* 表单样式 */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: -0.01em;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.form-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 1rem 1rem 1rem 3rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-family: 'Geist Sans', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 102, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 102, 0, 0.2);
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  font-size: 0.875rem;
+  color: #FF6666;
+  margin-top: 0.25rem;
+  font-family: 'Geist Mono', monospace;
+  animation: errorShake 0.3s ease;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.login-button {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #FF6600, #FF8000);
+  border: 1px solid rgba(255, 128, 0, 0.3);
+  border-radius: 0.75rem;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Geist Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.login-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #FF8000, #FFB366);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(255, 102, 0, 0.4);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button-loader {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.login-hint {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Geist Mono', monospace;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .login-page .navbar {
+    padding: 1rem 1.5rem;
+  }
+  
+  .login-page .navbar-links {
+    gap: 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .login-content {
+    padding: 1rem;
+  }
+  
+  .login-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .login-icon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .login-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+}
+
